@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h2 class="form-heading">From</h2>
+
+        <!-- from -->
+        <form class="form" action="">
+
+            <form class="container-box">
+
+                <!-- Row one -->
+                <div class="row">
+                    <div class="col col-one">
+                        <label for="name">Name:</label>
+                        <br>
+                        <input type="text" required class="input-field" id="name">
+                    </div>
+
+                    <div class="col col-two">
+                        <label for="age">Age:</label>
+                        <br>
+                        <input type="number" required class="input-field" id="age">
+                    </div>
+
+                    <div class="col col-two">
+                        <label for="aadhar">Aadhar Number:</label>
+                        <br>
+                        <input type="number" required class="input-field" id="aadhar">
+                    </div>
+
+                    <div class="col col-three">
+                        <label for="gender">Gender</label>
+                        <br>
+                        <select class="select" name="gender" id="gender" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row two -->
+                <div class="row">
+                    <div class="col col-one">
+                        <label for="class">Class:</label>
+                        <br>
+                        <input type="text" required class="input-field" id="class">
+                    </div>
+                    <div class="col col-two">
+                        <label for="school">School Name:</label>
+                        <br>
+                        <input type="text" required class="input-field" id="school">
+                    </div>
+                    <div class="col col-three">
+                        <label for="category">Category</label>
+                        <br>
+                        <select class="select" name="gender" id="category" required>
+                            <option value="general">General</option>
+                            <option value="obc">OBC</option>
+                            <option value="sc">SC</option>
+                            <option value="st">ST</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col col-one textarea" >
+                            <label for="brief">Detailed information about the student why he is compelled to drop from school:</label>
+                            <br>
+                            <textarea name="brief" id="brief" cols="50" rows="10"></textarea>
+                        </div>
+                </div>
+            </div>
+            <input type="submit" class="submit" value="submit" id="submit">
+        </form>
+
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+                apiKey: "AIzaSyCdMO2fZiP9gNrMgxMUxExSQMSBwJkCsvU",
+                authDomain: "learning-form-d9a4a.firebaseapp.com",
+                databaseURL: "https://learning-form-d9a4a-default-rtdb.firebaseio.com",
+                projectId: "learning-form-d9a4a",
+                storageBucket: "learning-form-d9a4a.appspot.com",
+                messagingSenderId: "723566419721",
+                appId: "1:723566419721:web:5e471aa0e64a7ea5313dd8",
+                measurementId: "G-3PQS9KGP5T"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+
+
+            import { getDatabase, ref, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+
+            const db = getDatabase();
+
+            const sName = document.getElementById('name');
+            const sAge = document.getElementById('age');
+            const sGender = document.getElementById('gender')
+            const sAadhar = document.getElementById('aadhar')
+            const sClass = document.getElementById('class');
+            const sSchool = document.getElementById('school');
+            const sCategory = document.getElementById('category');
+            const sBrief = document.getElementById('brief');
+            const fSubmit = document.getElementById('submit');
+
+            function AddData(){
+                set(ref(db,'StudentSet/'+ Number(sAadhar.value) ),{
+                    
+                        Name : sName.value ,
+                        Age  : Number(sAge.value) ,
+                        Gender : sGender.value ,
+                        Category: sCategory.value,
+                        Class : sClass.value,
+                        School : sSchool.value,
+                        AadharNum : Number(sAadhar.value),
+                        reasonOfStudent: sBrief.value 
+                    
+                }).then(()=> {
+                    alert("Data Added successfully");
+                }).catch(()=>{
+                    console.log(error);
+                })
+            }
+
+
+            function RetData(){
+                const  dbRef = ref(db);
+                get(child(db, 'StudentData/'+ Number(sAadhar.value))).then((snapshot)=>{
+                        if(snapshot.exists()){
+                            sName.value = snapshot.val().detailsOfStudent.Name;
+                            sAge.value = snapshot.val().detailsOfStudent.Age;
+                            sGender.value= snapshot.val().detailsOfStudent.Gender;
+                            sCategory.value = snapshot.val().detailsOfStudent.Category;
+                            sClass.value = snapshot.val().detailsOfStudent.Class;
+                            sSchool.value = snapshot.val().detailsOfStudent.School;
+                            sAadhar.value = snapshot.val().detailsOfStudent.AadharNum;
+                            sBrief.value = snapshot.val().detailsOfStudent.reasonOfStudent;
+                        }
+                        else{
+                            alert('Student details does not exist')
+                        }
+
+                }).catch(()=>{
+                    alert("Unsuccessful")
+                    console.log(error);
+                })
+
+            }
+
+
+            function UpdateData(){
+                update(ref(db,'StudentData/'+ Number(sAadhar.value) ),{
+                    detailsOfStudent: {
+                        Name : sName.value ,
+                        Age  : parseInt(sAge.value) ,
+                        Gender : sGender.value ,
+                        Category: sCategory.value,
+                        Class : sClass.value,
+                        School : sSchool.value,
+                        reasonOfStudent: sBrief.value 
+                    }
+                }).then(()=> {
+                    alert("Data upDated successfully");
+                }).catch(()=>{
+                    console.log(error);
+                })
+            }
+
+            function DeleteData(){
+                remove(ref(db,'StudentData/'+ Number(sAadhar.value) )).then(()=> {
+                    alert("Data Deleted successfully");
+                }).catch(()=>{
+                    console.log(error);
+                })
+            }
+
+
+            
+            fSubmit.addEventListener('click', AddData());
+            
+            
+        </script>
+</body>
+
+</html>
